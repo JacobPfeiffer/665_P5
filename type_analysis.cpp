@@ -144,27 +144,19 @@ void IntLitNode::typeAnalysis(TypeAnalysis * ta){
 }
 
 void CharLitNode::typeAnalysis(TypeAnalysis * ta){
-	// IntLits never fail their type analysis and always
-	// yield the type INT
 	ta->nodeType(this, BasicType::produce(CHAR));
 }
 
 void FalseNode::typeAnalysis(TypeAnalysis * ta){
-	// IntLits never fail their type analysis and always
-	// yield the type INT
 	ta->nodeType(this, BasicType::produce(BOOL));
 }
 
 void TrueNode::typeAnalysis(TypeAnalysis * ta){
-	// IntLits never fail their type analysis and always
-	// yield the type INT
 	ta->nodeType(this, BasicType::produce(BOOL));
 }
 
-// finish implementation here 
-void StrLitNode::typeAnalysis(TypeAnalysis * ta){
-	// IntLits never fail their type analysis and always
-	// yield the type INT
-	ta->nodeType(this, PtrType::produce(CHAR,));
-}
+// TODO finish implementation here 
+//void StrLitNode::typeAnalysis(TypeAnalysis * ta){
+//	ta->nodeType(this, PtrType::produce(CHAR,));
+//}
 }

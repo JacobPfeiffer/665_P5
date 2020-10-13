@@ -508,6 +508,7 @@ public:
 	}
 	void unparse(std::ostream& out, int indent) override;
 	bool nameAnalysis(SymbolTable *) override;
+	//virtual void typeAnalysis(TypeAnalysis *) override;
 private:
 	 const std::string myStr;
 };
@@ -521,6 +522,7 @@ public:
 	}
 	void unparse(std::ostream& out, int indent) override;
 	bool nameAnalysis(SymbolTable *) override;
+	virtual void typeAnalysis(TypeAnalysis *) override;
 private:
 	 const char myVal;
 };
@@ -543,6 +545,7 @@ public:
 	}
 	void unparse(std::ostream& out, int indent) override;
 	bool nameAnalysis(SymbolTable * symTab) override;
+	virtual void typeAnalysis(TypeAnalysis *) override;
 };
 
 class FalseNode : public ExpNode{
@@ -553,6 +556,7 @@ public:
 	}
 	void unparse(std::ostream& out, int indent) override;
 	bool nameAnalysis(SymbolTable * symTab) override;
+	virtual void typeAnalysis(TypeAnalysis *) override;
 };
 
 class CallStmtNode : public StmtNode{
