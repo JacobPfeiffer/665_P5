@@ -846,4 +846,101 @@ void NotEqualsNode::typeAnalysis(TypeAnalysis * ta){
 	}
 }
 
+void WhileStmtNode::typeAnalysis(TypeAnalysis * ta){
+    // call type Analysis on the condition and on each stmt in the body
+	// recursivvely call type analysis on list of StmtNode in the body
+	//Do typeAnalysis on the condition
+	myCond->typeAnalysis(ta);
+
+	// constant containing the type returned from type analysis on condition
+	const DataType * cond = ta->nodeType(myCond);
+
+	if (cond->isBool()){
+	    ta->nodeType(this, cond);
+	}
+	// case where cond is an error
+	else if(cond->asError()!=nullptr){
+	    ta->nodeType(this, ErrorType::produce());
+	}
+	// cond is not a bool and not an error type
+	else{
+	    ta->badWhileCond(myCond->line(), myCond->col());
+	    ta->nodeType(this, ErrorType::produce());
+	}
+
+	for(auto stmt: *myBody){
+	    stmt->typeAnalysis(ta);
+	}
+}
+
+void IfStmtNode::typeAnalysis(TypeAnalysis * ta){
+    // call type Analysis on the condition and on each stmt in the body
+	// recursivvely call type analysis on list of StmtNode in the body
+	//Do typeAnalysis on the condition
+	myCond->typeAnalysis(ta);
+
+	// constant containing the type returned from type analysis on condition
+	const DataType * cond = ta->nodeType(myCond);
+
+	if (cond->isBool()){
+	    ta->nodeType(this, cond);
+	}
+	// case where cond is an error
+	else if(cond->asError()!=nullptr){
+	    ta->nodeType(this, ErrorType::produce());
+	}
+	// cond is not a bool and not an error type
+	else{
+	    ta->badWhileCond(myCond->line(), myCond->col());
+	    ta->nodeType(this, ErrorType::produce());
+	}
+
+	for(auto stmt: *myBody){
+	    stmt->typeAnalysis(ta);
+	}
+}
+
+void IfElseStmtNode::typeAnalysis(TypeAnalysis * ta){
+    // call type Analysis on the condition and on each stmt in the body
+	// recursivvely call type analysis on list of StmtNode in the body
+	//Do typeAnalysis on the condition
+	myCond->typeAnalysis(ta);
+
+	// constant containing the type returned from type analysis on condition
+	const DataType * cond = ta->nodeType(myCond);
+
+	if (cond->isBool()){
+	    ta->nodeType(this, cond);
+	}
+	// case where cond is an error
+	else if(cond->asError()!=nullptr){
+	    ta->nodeType(this, ErrorType::produce());
+	}
+	// cond is not a bool and not an error type
+	else{
+	    ta->badWhileCond(myCond->line(), myCond->col());
+	    ta->nodeType(this, ErrorType::produce());
+	}
+
+	for(auto stmt: *myBodyTrue){
+	    stmt->typeAnalysis(ta);
+	}
+
+	for(auto stmt: *myBodyFalse){
+	    stmt->typeAnalysis(ta);
+	}
+}
+
+void ReturnStmtNode::typeAnalysis(TypeAnalysis * ta){
+}
+
+void DerefNode::typeAnalysis(TypeAnalysis * ta){
+}
+
+void RefNode::typeAnalysis(TypeAnalysis * ta){
+}
+
+void IndexNode::typeAnalysis(TypeAnalysis * ta){
+}
+
 }

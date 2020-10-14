@@ -8,5 +8,11 @@ void fn(){
     a=-c;
     b = b == c;
     b = b != c;
+    if(5+3){
+	b=b+c;
+    }
+    else{
+	b=b+c;
+    }
 
 }
