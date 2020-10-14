@@ -104,7 +104,7 @@ void AssignExpNode::typeAnalysis(TypeAnalysis * ta){
 	// exception is that if both types are function
 	// names, it should fail type analysis
 	if (tgtType == srcType){
-		if (tgtType->validVartype() == false) { //call false for void and fn types
+		if (tgtType->validVarType() == false) { //call false for void and fn types
 			//call error
 		}
 		else {
@@ -167,23 +167,6 @@ void TrueNode::typeAnalysis(TypeAnalysis * ta){
 	ta->nodeType(this, BasicType::produce(BOOL));
 }
 
-void PlusNode::typeAnalysis(TypeAnalysis* ta) {
-	//I don't think we're using strings anymore
-	//If we are, this won't be as easily applicable
-	ta->nodeType(this, BasicType::produce(INT));
-}
-
-void MinusNode::typeAnalysis(TypeAnalysis* ta) {
-	ta->nodeType(this, BasicType::produce(INT));
-}
-
-void DivideNode::typeAnalysis(TypeAnalysis* ta) {
-	ta->nodeType(this, BasicType::produce(INT));
-}
-
-void TimesNode::typeAnalysis(TypeAnalysis* ta) {
-	ta->nodeType(this, BasicType::produce(INT));
-}
 
 // TODO finish implementation here 
 //void StrLitNode::typeAnalysis(TypeAnalysis * ta){
