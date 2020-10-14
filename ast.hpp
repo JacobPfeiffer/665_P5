@@ -515,7 +515,7 @@ public:
 	}
 	void unparse(std::ostream& out, int indent) override;
 	bool nameAnalysis(SymbolTable *) override;
-	//virtual void typeAnalysis(TypeAnalysis *) override;
+	virtual void typeAnalysis(TypeAnalysis *) override;
 private:
 	 const std::string myStr;
 };

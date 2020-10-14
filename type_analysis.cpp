@@ -167,11 +167,9 @@ void TrueNode::typeAnalysis(TypeAnalysis * ta){
 	ta->nodeType(this, BasicType::produce(BOOL));
 }
 
-
-// TODO finish implementation here 
-//void StrLitNode::typeAnalysis(TypeAnalysis * ta){
-//	ta->nodeType(this, PtrType::produce(CHAR,));
-//}
+void StrLitNode::typeAnalysis(TypeAnalysis * ta){
+    ta->nodeType(this, PtrType::produce(BasicType::produce(CHAR),1));
+}
 
 void DivideNode::typeAnalysis(TypeAnalysis * ta){
 	//Do typeAnalysis on the subexpressions
