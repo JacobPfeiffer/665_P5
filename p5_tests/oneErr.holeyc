@@ -1,5 +1,9 @@
 int a;
 bool b;
 void fn(){
-	a = true * "hello" * b * b;
+	a = -b;
+	b++;
+	b--;
+	b= a-b;
+	b++;
 }

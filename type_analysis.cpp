@@ -229,7 +229,7 @@ void TimesNode::typeAnalysis(TypeAnalysis * ta){
 	const DataType * exp1 = ta->nodeType(myExp1);
 	const DataType * exp2 = ta->nodeType(myExp2);
 
-	// base case is you dont throw an error if the types are compatible for division i.e. both are integers 
+	// base case is you dont throw an error if the types are compatible for multiplication i.e. both are integers 
 	// checks that both expression types are the same and both are int type
 	if (exp1 == exp2 && exp1->isInt()){
 		ta->nodeType(this, exp1);
@@ -278,7 +278,7 @@ void MinusNode::typeAnalysis(TypeAnalysis * ta){
 	const DataType * exp1 = ta->nodeType(myExp1);
 	const DataType * exp2 = ta->nodeType(myExp2);
 
-	// base case is you dont throw an error if the types are compatible for division i.e. both are integers 
+	// base case is you dont throw an error if the types are compatible for subtraction i.e. both are integers 
 	// checks that both expression types are the same and both are int type
 	if (exp1 == exp2 && exp1->isInt()){
 		ta->nodeType(this, exp1);
@@ -327,7 +327,7 @@ void PlusNode::typeAnalysis(TypeAnalysis * ta){
 	const DataType * exp1 = ta->nodeType(myExp1);
 	const DataType * exp2 = ta->nodeType(myExp2);
 
-	// base case is you dont throw an error if the types are compatible for division i.e. both are integers 
+	// base case is you dont throw an error if the types are compatible for addition i.e. both are integers 
 	// checks that both expression types are the same and both are int type
 	if (exp1 == exp2 && exp1->isInt()){
 		ta->nodeType(this, exp1);
@@ -368,12 +368,65 @@ void PlusNode::typeAnalysis(TypeAnalysis * ta){
 }
 
 void NegNode::typeAnalysis(TypeAnalysis * ta){
+	myExp->typeAnalysis(ta);
+
+	const DataType * exp1 = ta->nodeType(myExp);
+
+	// base case is you dont throw an error if the type is an int 
+	if (exp1->isInt()){
+		ta->nodeType(this, exp1);
+	}
+	// case where exp1 is an error
+	else if(exp1->asError()!=nullptr){
+	    ta->nodeType(this, ErrorType::produce());
+	}
+	// case where not an int and not an error
+	else{
+	    ta->badMathOpd(myExp->line(), myExp->col());
+	    ta->nodeType(this, ErrorType::produce());
+	}
 }
 
+// TODO  report differs from oracle by one when reporting column of the error. This may be a bug in the oracle so I emailed Drew about it. 
 void PostDecStmtNode::typeAnalysis(TypeAnalysis * ta){
+	myLVal->typeAnalysis(ta);
+
+	const DataType * lval = ta->nodeType(myLVal);
+
+	// base case is you dont throw an error if the type is an int 
+	if (lval->isInt()){
+		ta->nodeType(this, lval);
+	}
+	// case where lval is an error
+	else if(lval->asError()!=nullptr){
+	    ta->nodeType(this, ErrorType::produce());
+	}
+	// case where not an int and not an error
+	else{
+	    ta->badMathOpd(myLVal->line(), myLVal->col());
+	    ta->nodeType(this, ErrorType::produce());
+	}
 }
 
+// TODO  report differs from oracle by one when reporting column of the error. This may be a bug in the oracle so I emailed Drew about it. 
 void PostIncStmtNode::typeAnalysis(TypeAnalysis * ta){
+	myLVal->typeAnalysis(ta);
+
+	const DataType * lval = ta->nodeType(myLVal);
+
+	// base case is you dont throw an error if the type is an int 
+	if (lval->isInt()){
+		ta->nodeType(this, lval);
+	}
+	// case where lval is an error
+	else if(lval->asError()!=nullptr){
+	    ta->nodeType(this, ErrorType::produce());
+	}
+	// case where not an int and not an error
+	else{
+	    ta->badMathOpd(myLVal->line(), myLVal->col());
+	    ta->nodeType(this, ErrorType::produce());
+	}
 }
 
 }
