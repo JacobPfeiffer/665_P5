@@ -625,19 +625,128 @@ void LessNode::typeAnalysis(TypeAnalysis * ta){
 	}
 }
 
+void OrNode::typeAnalysis(TypeAnalysis * ta){
+	//Do typeAnalysis on the subexpressions
+	myExp1->typeAnalysis(ta);
+	myExp2->typeAnalysis(ta);
+
+	// constant containing the type returned from type analysis on both expressions
+	const DataType * exp1 = ta->nodeType(myExp1);
+	const DataType * exp2 = ta->nodeType(myExp2);
+
+	// base case is you dont throw an error if the types are compatible for logical operator i.e. both are integers 
+	// checks that both expression types are the same and both are int type
+	if (exp1 == exp2 && exp1->isBool()){
+	    ta->nodeType(this, exp1);
+	}
+	// case where exp1 & exp2 are errors
+	else if(exp1->asError()!=nullptr && exp2->asError()!=nullptr ){
+	    ta->nodeType(this, ErrorType::produce());
+	}
+	// case where exp1 is an error
+	else if(exp1->asError()!=nullptr && exp2->asError()==nullptr ){
+	    ta->badLogicOpd(myExp2->line(), myExp2->col());
+	    ta->nodeType(this, ErrorType::produce());
+	}
+	// case where exp2 is an error
+	else if(exp1->asError()==nullptr && exp2->asError()!=nullptr ){
+	    ta->badLogicOpd(myExp1->line(), myExp1->col());
+	    ta->nodeType(this, ErrorType::produce());
+	}
+
+	// if both are not int throw Arithmetic operator applied to incompatible operands
+	else if(!exp1->isBool() && !exp2->isBool()){
+	    ta->badLogicOpd(myExp1->line(), myExp1->col());
+	    ta->badLogicOpd(myExp2->line(), myExp2->col());
+	    ta->nodeType(this, ErrorType::produce());
+	}
+	// first expression is not an int
+	// throw Arithmetic operator applied to invalid operand
+	else if(!exp1->isBool() && exp2->isBool() ){
+	    ta->badLogicOpd(myExp1->line(), myExp1->col());
+	    ta->nodeType(this, ErrorType::produce());
+	}
+	// second expression is not an int
+	// throw Arithmetic operator applied to invalid operand
+	else if(exp1->isBool() && !exp2->isBool()){
+	    ta->badLogicOpd(myExp2->line(), myExp2->col());
+	    ta->nodeType(this, ErrorType::produce());
+	}
+}
+
+void AndNode::typeAnalysis(TypeAnalysis * ta){
+	//Do typeAnalysis on the subexpressions
+	myExp1->typeAnalysis(ta);
+	myExp2->typeAnalysis(ta);
+
+	// constant containing the type returned from type analysis on both expressions
+	const DataType * exp1 = ta->nodeType(myExp1);
+	const DataType * exp2 = ta->nodeType(myExp2);
+
+	// base case is you dont throw an error if the types are compatible for logical operator i.e. both are integers 
+	// checks that both expression types are the same and both are int type
+	if (exp1 == exp2 && exp1->isBool()){
+		ta->nodeType(this, exp1);
+	}
+	// case where exp1 & exp2 are errors
+	else if(exp1->asError()!=nullptr && exp2->asError()!=nullptr ){
+	    ta->nodeType(this, ErrorType::produce());
+	}
+	// case where exp1 is an error
+	else if(exp1->asError()!=nullptr && exp2->asError()==nullptr ){
+	    ta->badLogicOpd(myExp2->line(), myExp2->col());
+	    ta->nodeType(this, ErrorType::produce());
+	}
+	// case where exp2 is an error
+	else if(exp1->asError()==nullptr && exp2->asError()!=nullptr ){
+	    ta->badLogicOpd(myExp1->line(), myExp1->col());
+	    ta->nodeType(this, ErrorType::produce());
+	}
+
+	// if both are not int throw Arithmetic operator applied to incompatible operands
+	else if(!exp1->isBool() && !exp2->isBool()){
+	    ta->badLogicOpd(myExp1->line(), myExp1->col());
+	    ta->badLogicOpd(myExp2->line(), myExp2->col());
+	    ta->nodeType(this, ErrorType::produce());
+	}
+	// first expression is not an int
+	// throw Arithmetic operator applied to invalid operand
+	else if(!exp1->isBool() && exp2->isBool() ){
+	    ta->badLogicOpd(myExp1->line(), myExp1->col());
+	    ta->nodeType(this, ErrorType::produce());
+	}
+	// second expression is not an int
+	// throw Arithmetic operator applied to invalid operand
+	else if(exp1->isBool() && !exp2->isBool()){
+	    ta->badLogicOpd(myExp2->line(), myExp2->col());
+	    ta->nodeType(this, ErrorType::produce());
+	}
+}
+
+void NotNode::typeAnalysis(TypeAnalysis * ta){
+	myExp->typeAnalysis(ta);
+
+	const DataType * exp1 = ta->nodeType(myExp);
+
+	// base case is you dont throw an error if the type is an bool 
+	if (exp1->isBool()){
+		ta->nodeType(this, exp1);
+	}
+	// case where exp1 is an error
+	else if(exp1->asError()!=nullptr){
+	    ta->nodeType(this, ErrorType::produce());
+	}
+	// case where not an bool and not an error
+	else{
+	    ta->badLogicOpd(myExp->line(), myExp->col());
+	    ta->nodeType(this, ErrorType::produce());
+	}
+}
+
 void EqualsNode::typeAnalysis(TypeAnalysis * ta){
 }
 
 void NotEqualsNode::typeAnalysis(TypeAnalysis * ta){
-}
-
-void OrNode::typeAnalysis(TypeAnalysis * ta){
-}
-
-void AndNode::typeAnalysis(TypeAnalysis * ta){
-}
-
-void NotNode::typeAnalysis(TypeAnalysis * ta){
 }
 
 }
