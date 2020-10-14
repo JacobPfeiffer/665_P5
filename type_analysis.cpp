@@ -4,6 +4,7 @@
 #include "types.hpp"
 #include "name_analysis.hpp"
 #include "type_analysis.hpp"
+#include <iostream>
 
 namespace holeyc{
 
@@ -73,9 +74,11 @@ void AssignStmtNode::typeAnalysis(TypeAnalysis * ta){
 
 	// As error returns null if subType is NOT an error type
 	// otherwise, it returns the subType itself
+	// nullptr casts to boolean false
 	if (subType->asError()){
 		ta->nodeType(this, subType);
 	} else {
+		// if error occurs then set AssignStmtNode nodeType to VOID?
 		ta->nodeType(this, BasicType::produce(VOID));
 	}
 }
@@ -103,6 +106,11 @@ void AssignExpNode::typeAnalysis(TypeAnalysis * ta){
 	if (tgtType == srcType){
 		ta->nodeType(this, tgtType);
 		return;
+	}
+	// TODO will need to adapt this later but for now set AssignExpNode node to to error and don't report if tgtType or srcType is error
+	if(tgtType->asError()!=nullptr || srcType->asError()!=nullptr ){
+	    ta->nodeType(this, ErrorType::produce());
+	    return;
 	}
 	
 	//Some functions are already defined for you to
@@ -159,4 +167,210 @@ void TrueNode::typeAnalysis(TypeAnalysis * ta){
 //void StrLitNode::typeAnalysis(TypeAnalysis * ta){
 //	ta->nodeType(this, PtrType::produce(CHAR,));
 //}
+
+void DivideNode::typeAnalysis(TypeAnalysis * ta){
+	//Do typeAnalysis on the subexpressions
+	myExp1->typeAnalysis(ta);
+	myExp2->typeAnalysis(ta);
+
+	// constant containing the type returned from type analysis on both expressions
+	const DataType * exp1 = ta->nodeType(myExp1);
+	const DataType * exp2 = ta->nodeType(myExp2);
+
+	// base case is you dont throw an error if the types are compatible for division i.e. both are integers 
+	// checks that both expression types are the same and both are int type
+	if (exp1 == exp2 && exp1->isInt()){
+		ta->nodeType(this, exp1);
+	}
+	// case where exp1 & exp2 are errors
+	else if(exp1->asError()!=nullptr && exp2->asError()!=nullptr ){
+	    ta->nodeType(this, ErrorType::produce());
+	}
+	// case where exp1 is an error
+	else if(exp1->asError()!=nullptr && exp2->asError()==nullptr ){
+	    ta->badMathOpd(myExp2->line(), myExp2->col());
+	    ta->nodeType(this, ErrorType::produce());
+	}
+	// case where exp2 is an error
+	else if(exp1->asError()==nullptr && exp2->asError()!=nullptr ){
+	    ta->badMathOpd(myExp1->line(), myExp1->col());
+	    ta->nodeType(this, ErrorType::produce());
+	}
+
+	// if both are not int throw Arithmetic operator applied to incompatible operands
+	else if(!exp1->isInt() && !exp2->isInt()){
+	    ta->badMathOpd(myExp1->line(), myExp1->col());
+	    ta->badMathOpd(myExp2->line(), myExp2->col());
+	    ta->nodeType(this, ErrorType::produce());
+	}
+	// first expression is not an int
+	// throw Arithmetic operator applied to invalid operand
+	else if(!exp1->isInt() && exp2->isInt() ){
+	    ta->badMathOpd(myExp1->line(), myExp1->col());
+	    ta->nodeType(this, ErrorType::produce());
+	}
+	// second expression is not an int
+	// throw Arithmetic operator applied to invalid operand
+	else if(exp1->isInt() && !exp2->isInt()){
+	    ta->badMathOpd(myExp2->line(), myExp2->col());
+	    ta->nodeType(this, ErrorType::produce());
+	}
+}
+
+void TimesNode::typeAnalysis(TypeAnalysis * ta){
+	//Do typeAnalysis on the subexpressions
+	myExp1->typeAnalysis(ta);
+	myExp2->typeAnalysis(ta);
+
+	// constant containing the type returned from type analysis on both expressions
+	const DataType * exp1 = ta->nodeType(myExp1);
+	const DataType * exp2 = ta->nodeType(myExp2);
+
+	// base case is you dont throw an error if the types are compatible for division i.e. both are integers 
+	// checks that both expression types are the same and both are int type
+	if (exp1 == exp2 && exp1->isInt()){
+		ta->nodeType(this, exp1);
+	}
+	// case where exp1 & exp2 are errors
+	else if(exp1->asError()!=nullptr && exp2->asError()!=nullptr ){
+	    ta->nodeType(this, ErrorType::produce());
+	}
+	// case where exp1 is an error
+	else if(exp1->asError()!=nullptr && exp2->asError()==nullptr ){
+	    ta->badMathOpd(myExp2->line(), myExp2->col());
+	    ta->nodeType(this, ErrorType::produce());
+	}
+	// case where exp2 is an error
+	else if(exp1->asError()==nullptr && exp2->asError()!=nullptr ){
+	    ta->badMathOpd(myExp1->line(), myExp1->col());
+	    ta->nodeType(this, ErrorType::produce());
+	}
+
+	// if both are not int throw Arithmetic operator applied to incompatible operands
+	else if(!exp1->isInt() && !exp2->isInt()){
+	    ta->badMathOpd(myExp1->line(), myExp1->col());
+	    ta->badMathOpd(myExp2->line(), myExp2->col());
+	    ta->nodeType(this, ErrorType::produce());
+	}
+	// first expression is not an int
+	// throw Arithmetic operator applied to invalid operand
+	else if(!exp1->isInt() && exp2->isInt() ){
+	    ta->badMathOpd(myExp1->line(), myExp1->col());
+	    ta->nodeType(this, ErrorType::produce());
+	}
+	// second expression is not an int
+	// throw Arithmetic operator applied to invalid operand
+	else if(exp1->isInt() && !exp2->isInt()){
+	    ta->badMathOpd(myExp2->line(), myExp2->col());
+	    ta->nodeType(this, ErrorType::produce());
+	}
+}
+
+void MinusNode::typeAnalysis(TypeAnalysis * ta){
+	//Do typeAnalysis on the subexpressions
+	myExp1->typeAnalysis(ta);
+	myExp2->typeAnalysis(ta);
+
+	// constant containing the type returned from type analysis on both expressions
+	const DataType * exp1 = ta->nodeType(myExp1);
+	const DataType * exp2 = ta->nodeType(myExp2);
+
+	// base case is you dont throw an error if the types are compatible for division i.e. both are integers 
+	// checks that both expression types are the same and both are int type
+	if (exp1 == exp2 && exp1->isInt()){
+		ta->nodeType(this, exp1);
+	}
+	// case where exp1 & exp2 are errors
+	else if(exp1->asError()!=nullptr && exp2->asError()!=nullptr ){
+	    ta->nodeType(this, ErrorType::produce());
+	}
+	// case where exp1 is an error
+	else if(exp1->asError()!=nullptr && exp2->asError()==nullptr ){
+	    ta->badMathOpd(myExp2->line(), myExp2->col());
+	    ta->nodeType(this, ErrorType::produce());
+	}
+	// case where exp2 is an error
+	else if(exp1->asError()==nullptr && exp2->asError()!=nullptr ){
+	    ta->badMathOpd(myExp1->line(), myExp1->col());
+	    ta->nodeType(this, ErrorType::produce());
+	}
+
+	// if both are not int throw Arithmetic operator applied to incompatible operands
+	else if(!exp1->isInt() && !exp2->isInt()){
+	    ta->badMathOpd(myExp1->line(), myExp1->col());
+	    ta->badMathOpd(myExp2->line(), myExp2->col());
+	    ta->nodeType(this, ErrorType::produce());
+	}
+	// first expression is not an int
+	// throw Arithmetic operator applied to invalid operand
+	else if(!exp1->isInt() && exp2->isInt() ){
+	    ta->badMathOpd(myExp1->line(), myExp1->col());
+	    ta->nodeType(this, ErrorType::produce());
+	}
+	// second expression is not an int
+	// throw Arithmetic operator applied to invalid operand
+	else if(exp1->isInt() && !exp2->isInt()){
+	    ta->badMathOpd(myExp2->line(), myExp2->col());
+	    ta->nodeType(this, ErrorType::produce());
+	}
+}
+
+void PlusNode::typeAnalysis(TypeAnalysis * ta){
+	//Do typeAnalysis on the subexpressions
+	myExp1->typeAnalysis(ta);
+	myExp2->typeAnalysis(ta);
+
+	// constant containing the type returned from type analysis on both expressions
+	const DataType * exp1 = ta->nodeType(myExp1);
+	const DataType * exp2 = ta->nodeType(myExp2);
+
+	// base case is you dont throw an error if the types are compatible for division i.e. both are integers 
+	// checks that both expression types are the same and both are int type
+	if (exp1 == exp2 && exp1->isInt()){
+		ta->nodeType(this, exp1);
+	}
+	// case where exp1 & exp2 are errors
+	else if(exp1->asError()!=nullptr && exp2->asError()!=nullptr ){
+	    ta->nodeType(this, ErrorType::produce());
+	}
+	// case where exp1 is an error
+	else if(exp1->asError()!=nullptr && exp2->asError()==nullptr ){
+	    ta->badMathOpd(myExp2->line(), myExp2->col());
+	    ta->nodeType(this, ErrorType::produce());
+	}
+	// case where exp2 is an error
+	else if(exp1->asError()==nullptr && exp2->asError()!=nullptr ){
+	    ta->badMathOpd(myExp1->line(), myExp1->col());
+	    ta->nodeType(this, ErrorType::produce());
+	}
+
+	// if both are not int throw Arithmetic operator applied to incompatible operands
+	else if(!exp1->isInt() && !exp2->isInt()){
+	    ta->badMathOpd(myExp1->line(), myExp1->col());
+	    ta->badMathOpd(myExp2->line(), myExp2->col());
+	    ta->nodeType(this, ErrorType::produce());
+	}
+	// first expression is not an int
+	// throw Arithmetic operator applied to invalid operand
+	else if(!exp1->isInt() && exp2->isInt() ){
+	    ta->badMathOpd(myExp1->line(), myExp1->col());
+	    ta->nodeType(this, ErrorType::produce());
+	}
+	// second expression is not an int
+	// throw Arithmetic operator applied to invalid operand
+	else if(exp1->isInt() && !exp2->isInt()){
+	    ta->badMathOpd(myExp2->line(), myExp2->col());
+	    ta->nodeType(this, ErrorType::produce());
+	}
+}
+
+void NegNode::typeAnalysis(TypeAnalysis * ta){
+}
+
+void PostDecStmtNode::typeAnalysis(TypeAnalysis * ta){
+}
+
+void PostIncStmtNode::typeAnalysis(TypeAnalysis * ta){
+}
+
 }
