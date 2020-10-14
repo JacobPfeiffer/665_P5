@@ -1,5 +1,12 @@
 int a;
 bool b;
+intptr c;
 void fn(){
-    b = !a;
+    a = c+c;
+    c++;
+    c--;
+    a=-c;
+    b = b == c;
+    b = b != c;
+
 }
