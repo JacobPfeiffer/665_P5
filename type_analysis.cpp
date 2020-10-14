@@ -84,7 +84,7 @@ void AssignStmtNode::typeAnalysis(TypeAnalysis * ta){
 }
 
 void ExpNode::typeAnalysis(TypeAnalysis * ta){
-	TODO("Override me in the subclass");
+	//TODO("Override me in the subclass");
 }
 
 void AssignExpNode::typeAnalysis(TypeAnalysis * ta){
@@ -104,7 +104,12 @@ void AssignExpNode::typeAnalysis(TypeAnalysis * ta){
 	// exception is that if both types are function
 	// names, it should fail type analysis
 	if (tgtType == srcType){
-		ta->nodeType(this, tgtType);
+		if (tgtType->validVartype() == false) { //call false for void and fn types
+			//call error
+		}
+		else {
+			ta->nodeType(this, tgtType);
+		}
 		return;
 	}
 	// TODO will need to adapt this later but for now set AssignExpNode node to to error and don't report if tgtType or srcType is error
@@ -120,7 +125,6 @@ void AssignExpNode::typeAnalysis(TypeAnalysis * ta){
 	// will print "Type check failed" at the end
 	ta->badAssignOpr(this->line(), this->col());
 
-
 	//Note that reporting an error does not set the
 	// type of the current node, so setting the node
 	// type must be done
@@ -128,7 +132,7 @@ void AssignExpNode::typeAnalysis(TypeAnalysis * ta){
 }
 
 void DeclNode::typeAnalysis(TypeAnalysis * ta){
-	TODO("Override me in the subclass");
+	//TODO("Override me in the subclass");
 }
 
 void VarDeclNode::typeAnalysis(TypeAnalysis * ta){
@@ -161,6 +165,24 @@ void FalseNode::typeAnalysis(TypeAnalysis * ta){
 
 void TrueNode::typeAnalysis(TypeAnalysis * ta){
 	ta->nodeType(this, BasicType::produce(BOOL));
+}
+
+void PlusNode::typeAnalysis(TypeAnalysis* ta) {
+	//I don't think we're using strings anymore
+	//If we are, this won't be as easily applicable
+	ta->nodeType(this, BasicType::produce(INT));
+}
+
+void MinusNode::typeAnalysis(TypeAnalysis* ta) {
+	ta->nodeType(this, BasicType::produce(INT));
+}
+
+void DivideNode::typeAnalysis(TypeAnalysis* ta) {
+	ta->nodeType(this, BasicType::produce(INT));
+}
+
+void TimesNode::typeAnalysis(TypeAnalysis* ta) {
+	ta->nodeType(this, BasicType::produce(INT));
 }
 
 // TODO finish implementation here 
