@@ -1026,4 +1026,49 @@ void CallExpNode::typeAnalysis(TypeAnalysis * ta){
     }
 }
 
+void FromConsoleStmtNode::typeAnalysis(TypeAnalysis * ta, TypeNode * retType){
+    // call typeAnalysis on myDst
+    myDst->typeAnalysis(ta);
+    const DataType * dst = ta->nodeType(myDst);
+    // myDst is a func
+    if(dst->asFn()!=nullptr){
+	ta->readFn(myDst->line(),myDst->col());
+	ta->nodeType(this, ErrorType::produce());
+    }
+    // it is a pointer
+    else if (dst->isPtr()){
+	ta->rawPtr(myDst->line(),myDst->col());
+	ta->nodeType(this, ErrorType::produce());
+    }
+    // TODO make sure that asBasic is correct
+    else{
+	ta->nodeType(this, dst->asBasic());
+    }
+}
+
+void ToConsoleStmtNode::typeAnalysis(TypeAnalysis * ta, TypeNode * retType){
+    // call typeAnalysis on myDst
+    mySrc->typeAnalysis(ta);
+    const DataType * src = ta->nodeType(mySrc);
+    // myDst is a func
+    if(src->asFn()!=nullptr){
+	ta->writeFn(mySrc->line(),mySrc->col());
+	ta->nodeType(this, ErrorType::produce());
+    }
+    // it is a pointer
+    // TODO allow charptr
+    else if (src->isPtr() && src->asPtr()->getString() != "charptr" ){
+	ta->rawPtr(mySrc->line(),mySrc->col());
+	ta->nodeType(this, ErrorType::produce());
+    }
+    else if (src->isVoid()){
+	ta->badWriteVoid(mySrc->line(),mySrc->col());
+	ta->nodeType(this, ErrorType::produce());
+    }
+    // TODO make sure that asBasic is correct
+    else{
+	ta->nodeType(this, BasicType::produce(VOID));
+    }
+}
+
 }

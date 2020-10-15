@@ -228,6 +228,7 @@ public:
 	: StmtNode(l, c), myDst(dstIn){ }
 	void unparse(std::ostream& out, int indent) override;
 	bool nameAnalysis(SymbolTable * symTab) override;
+	virtual void typeAnalysis(TypeAnalysis *, TypeNode *) override;
 private:
 	LValNode * myDst;
 };
@@ -238,6 +239,7 @@ public:
 	: StmtNode(l, c), mySrc(srcIn){ }
 	void unparse(std::ostream& out, int indent) override;
 	bool nameAnalysis(SymbolTable * symTab) override;
+	virtual void typeAnalysis(TypeAnalysis *, TypeNode *) override;
 private:
 	ExpNode * mySrc;
 };

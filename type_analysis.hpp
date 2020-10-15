@@ -107,6 +107,12 @@ public:
 			"Attempt to call a "
 			"non-function");
 	}
+	void rawPtr(size_t line, size_t col){
+		hasError = true;
+		Report::fatal(line, col,
+			"Attempt to write a "
+			"raw pointer");
+	}
 	void badAssignOpr(size_t line, size_t col){
 		hasError = true;
 		Report::fatal(line, col, 
@@ -176,7 +182,7 @@ public:
 	void writeFn(size_t line, size_t col){
 		hasError = true;
 		Report::fatal(line, col,
-			"Attempt to write a function");
+			"Attempt to output a function");
 	}
 	
 	void readFn(size_t line, size_t col){
