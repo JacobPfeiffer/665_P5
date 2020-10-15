@@ -979,4 +979,51 @@ void RefNode::typeAnalysis(TypeAnalysis * ta){
 void IndexNode::typeAnalysis(TypeAnalysis * ta){
 }
 
+void CallStmtNode::typeAnalysis(TypeAnalysis * ta, TypeNode * myRetType){
+	TODO("Implement me in the subclass");
+}
+
+void CallExpNode::typeAnalysis(TypeAnalysis * ta){
+
+    // call typeAnalysis on id
+    myID->typeAnalysis(ta);
+    const DataType * id = ta->nodeType(myID);
+    // call to an id that is not a function id
+    if(id->asFn()==nullptr){
+	ta->badCallee(myID->line(),myID->col());
+	ta->nodeType(this, ErrorType::produce());
+	return;
+    }
+    // call type analysis on args
+	for(auto argument: *myArgs){
+	    argument->typeAnalysis(ta);
+	}
+    // TODO check error type for arguments
+    // wrong # of arguments
+    if(id->asFn()->getFormalTypes()->size()!=myArgs->size()){
+	ta->badArgCount(myID->line(),myID->col());
+    }
+    // wrong argument types
+    else{
+	int i=0;
+	int j=0;
+	if(id->asFn()->getFormalTypes()!=nullptr){
+	    auto it = id->asFn()->getFormalTypes()->begin();
+	    for(auto argument: *myArgs){
+		    while(j<i){
+			it++;
+			j++;
+		}
+		if(ta->nodeType(argument)->asError()!=nullptr){
+		}
+		else if(ta->nodeType(argument)!=*it ){
+		    ta->badArgMatch(argument->line(),argument->col());
+		}
+		    i++;
+	}
+    }
+		ta->nodeType(this, id->asFn()->getReturnType());
+    }
+}
+
 }

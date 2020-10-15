@@ -1,12 +1,11 @@
 int a;
 bool b;
 intptr c;
-int fn(){
+int fn(int one, char two){
     a = c+c;
     c++;
     c--;
     a=-c;
-
-    return 5+b;
+    b=b(b,b); 
 
 }
