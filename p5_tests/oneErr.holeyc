@@ -7,6 +7,9 @@ void fn(int one, char two){
     c++;
     c--;
     a=-c;
-    TOCONSOLE i;
+    a=a;
+    fn=a;
+    a=fn;
+    fn=fn;
 
 }

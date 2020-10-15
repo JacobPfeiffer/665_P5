@@ -105,6 +105,22 @@ void AssignExpNode::typeAnalysis(TypeAnalysis * ta){
 	// it is usually ok to do the assignment. One
 	// exception is that if both types are function
 	// names, it should fail type analysis
+	if(tgtType->asFn()!=nullptr || srcType->asFn()!=nullptr){
+	    if(tgtType->asFn()!=nullptr && srcType->asFn()!=nullptr){
+		ta->badAssignOpd(myDst->line(), myDst->col());
+		ta->badAssignOpd(mySrc->line(), mySrc->col());
+		ta->nodeType(this, ErrorType::produce());
+	    }
+	    else if( tgtType->asFn()!=nullptr ){
+		ta->badAssignOpd(myDst->line(), myDst->col());
+		ta->nodeType(this, ErrorType::produce());
+	    }
+	    else{
+		ta->badAssignOpd(mySrc->line(), mySrc->col());
+		ta->nodeType(this, ErrorType::produce());
+	    }
+	    return;
+	}
 	if (tgtType == srcType){
 		if (tgtType->validVarType() == false) { //call false for void and fn types
 			//call error
