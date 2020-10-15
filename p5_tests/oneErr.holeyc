@@ -1,18 +1,12 @@
 int a;
 bool b;
 intptr c;
-void fn(){
+int fn(){
     a = c+c;
     c++;
     c--;
     a=-c;
-    b = b == c;
-    b = b != c;
-    if(5+3){
-	b=b+c;
-    }
-    else{
-	b=b+c;
-    }
+
+    return 5+b;
 
 }

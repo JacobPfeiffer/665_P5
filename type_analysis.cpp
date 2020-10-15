@@ -32,7 +32,7 @@ void ProgramNode::typeAnalysis(TypeAnalysis * ta){
 	// each element in turn and adding them
 	// to the ta object's hashMap
 	for (auto global : *myGlobals){
-		global->typeAnalysis(ta);
+		global->typeAnalysis(ta,nullptr);
 	}
 
 	//The type of the program node will never
@@ -42,7 +42,7 @@ void ProgramNode::typeAnalysis(TypeAnalysis * ta){
 	ta->nodeType(this, BasicType::produce(VOID));
 }
 
-void FnDeclNode::typeAnalysis(TypeAnalysis * ta){
+void FnDeclNode::typeAnalysis(TypeAnalysis * ta, TypeNode * retType){
 
 	//HINT: you might want to change the signature for
 	// typeAnalysis on FnBodyNode to take a second
@@ -53,16 +53,18 @@ void FnDeclNode::typeAnalysis(TypeAnalysis * ta){
 
 	//Note: this function may need extra code
 
+	// loops through statement nodes
+	// call getRetTypeNode for fn return type and compare to any return statement nodes types
 	for (auto stmt : *myBody){
-		stmt->typeAnalysis(ta);
+		stmt->typeAnalysis(ta,myRetType);
 	}
 }
 
-void StmtNode::typeAnalysis(TypeAnalysis * ta){
+void StmtNode::typeAnalysis(TypeAnalysis * ta, TypeNode * retType){
 	TODO("Implement me in the subclass");
 }
 
-void AssignStmtNode::typeAnalysis(TypeAnalysis * ta){
+void AssignStmtNode::typeAnalysis(TypeAnalysis * ta, TypeNode * retType){
 	myExp->typeAnalysis(ta);
 
 	//It can be a bit of a pain to write 
@@ -131,11 +133,11 @@ void AssignExpNode::typeAnalysis(TypeAnalysis * ta){
 	ta->nodeType(this, ErrorType::produce());
 }
 
-void DeclNode::typeAnalysis(TypeAnalysis * ta){
+void DeclNode::typeAnalysis(TypeAnalysis * ta, TypeNode * retType){
 	//TODO("Override me in the subclass");
 }
 
-void VarDeclNode::typeAnalysis(TypeAnalysis * ta){
+void VarDeclNode::typeAnalysis(TypeAnalysis * ta, TypeNode * retType){
 	// VarDecls always pass type analysis, since they 
 	// are never used in an expression. You may choose
 	// to type them void (like this), as discussed in class
@@ -416,7 +418,7 @@ void NegNode::typeAnalysis(TypeAnalysis * ta){
 	}
 }
 
-void PostDecStmtNode::typeAnalysis(TypeAnalysis * ta){
+void PostDecStmtNode::typeAnalysis(TypeAnalysis * ta, TypeNode * retType){
 	myLVal->typeAnalysis(ta);
 
 	const DataType * lval = ta->nodeType(myLVal);
@@ -441,7 +443,7 @@ void PostDecStmtNode::typeAnalysis(TypeAnalysis * ta){
 	}
 }
 
-void PostIncStmtNode::typeAnalysis(TypeAnalysis * ta){
+void PostIncStmtNode::typeAnalysis(TypeAnalysis * ta, TypeNode * retType){
 	myLVal->typeAnalysis(ta);
 
 	const DataType * lval = ta->nodeType(myLVal);
@@ -846,7 +848,7 @@ void NotEqualsNode::typeAnalysis(TypeAnalysis * ta){
 	}
 }
 
-void WhileStmtNode::typeAnalysis(TypeAnalysis * ta){
+void WhileStmtNode::typeAnalysis(TypeAnalysis * ta, TypeNode * retType){
     // call type Analysis on the condition and on each stmt in the body
 	// recursivvely call type analysis on list of StmtNode in the body
 	//Do typeAnalysis on the condition
@@ -869,11 +871,11 @@ void WhileStmtNode::typeAnalysis(TypeAnalysis * ta){
 	}
 
 	for(auto stmt: *myBody){
-	    stmt->typeAnalysis(ta);
+	    stmt->typeAnalysis(ta, nullptr);
 	}
 }
 
-void IfStmtNode::typeAnalysis(TypeAnalysis * ta){
+void IfStmtNode::typeAnalysis(TypeAnalysis * ta, TypeNode * retType){
     // call type Analysis on the condition and on each stmt in the body
 	// recursivvely call type analysis on list of StmtNode in the body
 	//Do typeAnalysis on the condition
@@ -896,11 +898,11 @@ void IfStmtNode::typeAnalysis(TypeAnalysis * ta){
 	}
 
 	for(auto stmt: *myBody){
-	    stmt->typeAnalysis(ta);
+	    stmt->typeAnalysis(ta, nullptr);
 	}
 }
 
-void IfElseStmtNode::typeAnalysis(TypeAnalysis * ta){
+void IfElseStmtNode::typeAnalysis(TypeAnalysis * ta, TypeNode * retType){
     // call type Analysis on the condition and on each stmt in the body
 	// recursivvely call type analysis on list of StmtNode in the body
 	//Do typeAnalysis on the condition
@@ -923,15 +925,49 @@ void IfElseStmtNode::typeAnalysis(TypeAnalysis * ta){
 	}
 
 	for(auto stmt: *myBodyTrue){
-	    stmt->typeAnalysis(ta);
+	    stmt->typeAnalysis(ta, nullptr);
 	}
 
 	for(auto stmt: *myBodyFalse){
-	    stmt->typeAnalysis(ta);
+	    stmt->typeAnalysis(ta, nullptr );
 	}
 }
 
-void ReturnStmtNode::typeAnalysis(TypeAnalysis * ta){
+void ReturnStmtNode::typeAnalysis(TypeAnalysis * ta, TypeNode * retType){
+    // TODO case where return exp is of error type
+    // do type analysis on the expression 
+	// an empty return stmt
+	if(myExp == nullptr){
+	    if(!retType->getType()->isVoid()){
+		// throw an error return from non void with empty return
+		// set node to error type
+		ta->badNoRet(this->line(), this->col());
+		ta->nodeType(this, ErrorType::produce());
+	    }
+	}
+	// type is void and we return something
+	else if(retType->getType()->isVoid()){
+	    myExp->typeAnalysis(ta);
+	    const DataType * exp = ta->nodeType(myExp);
+	    ta->extraRetValue(myExp->line(), myExp->col());
+	    ta->nodeType(this, ErrorType::produce());
+	}
+	else {
+	    myExp->typeAnalysis(ta);
+	    const DataType * exp = ta->nodeType(myExp);
+	    if(exp->asError()!=nullptr){
+		ta->nodeType(this, ErrorType::produce());
+	    }
+	    //type is not void but we return the wrong type
+	    else if(exp!=retType->getType()){
+		ta->badRetValue(myExp->line(), myExp->col());
+		ta->nodeType(this, ErrorType::produce());
+	    }
+	    //types match
+	    else{
+		ta->nodeType(this, exp);
+	    }
+	}
 }
 
 void DerefNode::typeAnalysis(TypeAnalysis * ta){
