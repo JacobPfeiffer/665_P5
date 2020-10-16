@@ -1003,7 +1003,23 @@ void RefNode::typeAnalysis(TypeAnalysis * ta){ //test
 	ta->nodeType(this, id);
 }
 
-void IndexNode::typeAnalysis(TypeAnalysis * ta){
+void IndexNode::typeAnalysis(TypeAnalysis * ta){ //test
+	const DataType* base = ta->nodeType(myBase);
+	if (base->isPtr() == false) {
+		ta->badPtrBase(myBase->line(), myBase->col());
+		ta->nodeType(this, ErrorType::produce());
+	}
+	else {
+		myOffset->typeAnalysis(ta);
+		const DataType* offset = ta->nodeType(myOffset);
+		if (offset->isInt() == false) {
+			ta->badIndex(myBase->line(), myBase->col());
+			ta->nodeType(this, ErrorType::produce());
+		}
+		else {
+			ta->nodeType(this, offset);
+		}
+	}
 }
 
 void CallStmtNode::typeAnalysis(TypeAnalysis * ta, TypeNode * myRetType){
