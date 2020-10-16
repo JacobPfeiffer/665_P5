@@ -984,13 +984,40 @@ void ReturnStmtNode::typeAnalysis(TypeAnalysis * ta, TypeNode * retType){
 	}
 }
 
-void DerefNode::typeAnalysis(TypeAnalysis * ta){
+void DerefNode::typeAnalysis(TypeAnalysis * ta){ //test
+	const DataType* id = ta->nodeType(myID);
+	//error if dereferencing a function
+	if (id->asFn() != nullptr) {
+		ta->fnDeref(myID->line(), myID->col());
+		ta->nodeType(this, ErrorType::produce());
+	}
+	else {
+		ta->nodeType(this, id);
+	}
 }
 
-void RefNode::typeAnalysis(TypeAnalysis * ta){
+void RefNode::typeAnalysis(TypeAnalysis * ta){ //test
+	const DataType* id = ta->nodeType(myID);	
+	ta->nodeType(this, id);
 }
 
-void IndexNode::typeAnalysis(TypeAnalysis * ta){
+void IndexNode::typeAnalysis(TypeAnalysis * ta){ //test
+	const DataType* base = ta->nodeType(myBase);
+	if (base->isPtr() == false) {
+		ta->badPtrBase(myBase->line(), myBase->col());
+		ta->nodeType(this, ErrorType::produce());
+	}
+	else {
+		myOffset->typeAnalysis(ta);
+		const DataType* offset = ta->nodeType(myOffset);
+		if (offset->isInt() == false) {
+			ta->badIndex(myBase->line(), myBase->col());
+			ta->nodeType(this, ErrorType::produce());
+		}
+		else {
+			ta->nodeType(this, offset);
+		}
+	}
 }
 
 void CallStmtNode::typeAnalysis(TypeAnalysis * ta, TypeNode * myRetType){
