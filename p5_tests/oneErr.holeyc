@@ -2,10 +2,8 @@ int a;
 bool b;
 charptr c;
 intptr i;
-void fn(int one, char two){
-    a = c+c;
-    c++;
-    c--;
-    a=-c;
+void fn(int one, int two){
+    if(a!=b){
+    }
 
 }
