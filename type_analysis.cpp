@@ -203,12 +203,6 @@ void DivideNode::typeAnalysis(TypeAnalysis * ta){
 	if (exp1 == exp2 && exp1->isInt()){
 		ta->nodeType(this, exp1);
 	}
-	// case where both expressions are ptr type 
-	else if(exp1->isPtr() && exp2->isPtr()){
-
-	    ta->badMathOpr(this->line(), this->col());
-	    ta->nodeType(this, ErrorType::produce());
-	}
 	// case where exp1 & exp2 are errors
 	else if(exp1->asError()!=nullptr && exp2->asError()!=nullptr ){
 	    ta->nodeType(this, ErrorType::produce());
@@ -257,12 +251,6 @@ void TimesNode::typeAnalysis(TypeAnalysis * ta){
 	// checks that both expression types are the same and both are int type
 	if (exp1 == exp2 && exp1->isInt()){
 		ta->nodeType(this, exp1);
-	}
-	// case where both expressions are ptr type 
-	else if(exp1->isPtr() && exp2->isPtr()){
-
-	    ta->badMathOpr(this->line(), this->col());
-	    ta->nodeType(this, ErrorType::produce());
 	}
 	// case where exp1 & exp2 are errors
 	else if(exp1->asError()!=nullptr && exp2->asError()!=nullptr ){
@@ -313,12 +301,6 @@ void MinusNode::typeAnalysis(TypeAnalysis * ta){
 	if (exp1 == exp2 && exp1->isInt()){
 		ta->nodeType(this, exp1);
 	}
-	// case where both expressions are ptr type 
-	else if(exp1->isPtr() && exp2->isPtr()){
-
-	    ta->badMathOpr(this->line(), this->col());
-	    ta->nodeType(this, ErrorType::produce());
-	}
 	// case where exp1 & exp2 are errors
 	else if(exp1->asError()!=nullptr && exp2->asError()!=nullptr ){
 	    ta->nodeType(this, ErrorType::produce());
@@ -368,12 +350,6 @@ void PlusNode::typeAnalysis(TypeAnalysis * ta){
 	if (exp1 == exp2 && exp1->isInt()){
 		ta->nodeType(this, exp1);
 	}
-	// case where both expressions are ptrs
-	else if(exp1->isPtr() && exp2->isPtr()){
-
-	    ta->badMathOpr(this->line(), this->col());
-	    ta->nodeType(this, ErrorType::produce());
-	}
 	// case where exp1 & exp2 are errors
 	else if(exp1->asError()!=nullptr && exp2->asError()!=nullptr ){
 	    ta->nodeType(this, ErrorType::produce());
@@ -417,11 +393,6 @@ void NegNode::typeAnalysis(TypeAnalysis * ta){
 	// base case is you dont throw an error if the type is an int 
 	if (exp1->isInt()){
 		ta->nodeType(this, exp1);
-	}
-	// expression is a pointer
-	else if (exp1->isPtr()){
-	    ta->badMathOpr(this->line(), this->col());
-	    ta->nodeType(this, ErrorType::produce());
 	}
 	// case where exp1 is an error
 	else if(exp1->asError()){

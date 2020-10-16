@@ -7,11 +7,5 @@ void fn(int one, char two){
     c++;
     c--;
     a=-c;
-    a=a;
-    fn=a;
-    a=fn;
-    fn=fn;
-    if(fn==3){
-    }
 
 }
