@@ -986,10 +986,21 @@ void ReturnStmtNode::typeAnalysis(TypeAnalysis * ta, TypeNode * retType){
 	}
 }
 
-void DerefNode::typeAnalysis(TypeAnalysis * ta){
+void DerefNode::typeAnalysis(TypeAnalysis * ta){ //test
+	const DataType* id = ta->nodeType(myID);
+	//error if dereferencing a function
+	if (id->asFn() != nullptr) {
+		ta->fnDeref(myID->line(), myID->col());
+		ta->nodeType(this, ErrorType::produce());
+	}
+	else {
+		ta->nodeType(this, id);
+	}
 }
 
-void RefNode::typeAnalysis(TypeAnalysis * ta){
+void RefNode::typeAnalysis(TypeAnalysis * ta){ //test
+	const DataType* id = ta->nodeType(myID);	
+	ta->nodeType(this, id);
 }
 
 void IndexNode::typeAnalysis(TypeAnalysis * ta){
