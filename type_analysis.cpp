@@ -803,27 +803,26 @@ void EqualsNode::typeAnalysis(TypeAnalysis * ta){
 	// base case is you dont throw an error if the types are compatible for equality operator i.e. both are same type 
 	// checks that both expression types are the same 
 	// TODO check to make sure that type is not a function name or of type void
-	if (exp1 == exp2){
-		ta->nodeType(this, exp1);
-	}
 	// case where exp1 & exp2 are errors
-	else if(exp1->asError()!=nullptr && exp2->asError()!=nullptr ){
+	if(exp1->asError()!=nullptr && exp2->asError()!=nullptr ){
 	    ta->nodeType(this, ErrorType::produce());
 	}
 	// case where exp1 is an error
 	else if(exp1->asError()!=nullptr && exp2->asError()==nullptr ){
-	    ta->badEqOpd(this->line(), this->col());
+	    ta->badEqOpr(this->line(), this->col());
 	    ta->nodeType(this, ErrorType::produce());
 	}
 	// case where exp2 is an error
 	else if(exp1->asError()==nullptr && exp2->asError()!=nullptr ){
-	    ta->badEqOpd(this->line(), this->col());
+	    ta->badEqOpr(this->line(), this->col());
 	    ta->nodeType(this, ErrorType::produce());
 	}
-
+	else if (exp1 == exp2){
+		ta->nodeType(this, exp1);
+	}
 	// if both are not the same type throw error
 	else{
-	    ta->badEqOpd(this->line(), this->col());
+	    ta->badEqOpr(this->line(), this->col());
 	    ta->nodeType(this, ErrorType::produce());
 	}
 }
@@ -838,28 +837,27 @@ void NotEqualsNode::typeAnalysis(TypeAnalysis * ta){
 	const DataType * exp2 = ta->nodeType(myExp2);
 
 	// base case is you dont throw an error if the types are compatible for equality operator i.e. both are same type 
-	// checks that both expression types are the same 
-	// TODO check to make sure that type is not a function name or of type void
-	if (exp1 == exp2){
-		ta->nodeType(this, exp1);
-	}
 	// case where exp1 & exp2 are errors
-	else if(exp1->asError()!=nullptr && exp2->asError()!=nullptr ){
+	if(exp1->asError()!=nullptr && exp2->asError()!=nullptr ){
 	    ta->nodeType(this, ErrorType::produce());
 	}
 	// case where exp1 is an error
 	else if(exp1->asError()!=nullptr && exp2->asError()==nullptr ){
-	    ta->badEqOpd(this->line(), this->col());
+	    ta->badEqOpr(this->line(), this->col());
 	    ta->nodeType(this, ErrorType::produce());
 	}
 	// case where exp2 is an error
 	else if(exp1->asError()==nullptr && exp2->asError()!=nullptr ){
-	    ta->badEqOpd(this->line(), this->col());
+	    ta->badEqOpr(this->line(), this->col());
 	    ta->nodeType(this, ErrorType::produce());
+	}
+	// checks that both expression types are the same 
+	else if (exp1 == exp2){
+		ta->nodeType(this, exp1);
 	}
 	// if both are not the same type throw error
 	else{
-	    ta->badEqOpd(this->line(), this->col());
+	    ta->badEqOpr(this->line(), this->col());
 	    ta->nodeType(this, ErrorType::produce());
 	}
 }
@@ -909,7 +907,7 @@ void IfStmtNode::typeAnalysis(TypeAnalysis * ta, TypeNode * retType){
 	}
 	// cond is not a bool and not an error type
 	else{
-	    ta->badWhileCond(myCond->line(), myCond->col());
+	    ta->badIfCond(myCond->line(), myCond->col());
 	    ta->nodeType(this, ErrorType::produce());
 	}
 
@@ -936,7 +934,7 @@ void IfElseStmtNode::typeAnalysis(TypeAnalysis * ta, TypeNode * retType){
 	}
 	// cond is not a bool and not an error type
 	else{
-	    ta->badWhileCond(myCond->line(), myCond->col());
+	    ta->badIfCond(myCond->line(), myCond->col());
 	    ta->nodeType(this, ErrorType::produce());
 	}
 

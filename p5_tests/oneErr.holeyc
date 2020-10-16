@@ -11,5 +11,7 @@ void fn(int one, char two){
     fn=a;
     a=fn;
     fn=fn;
+    if(fn==3){
+    }
 
 }
